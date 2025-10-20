@@ -7,10 +7,11 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
+import { initializeDataIfNeeded } from '@/services/initializeData';
 
 export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
+    // Catch any errors thrown by the Layout component.
+    ErrorBoundary
 } from 'expo-router';
 
 export const unstable_settings = {
@@ -35,6 +36,8 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
+      // Inicializa dados de exemplo se necessário
+      initializeDataIfNeeded();
     }
   }, [loaded]);
 
@@ -47,11 +50,42 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+      <Stack
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: isDark ? '#1e293b' : '#ffffff',
+          },
+          headerTintColor: isDark ? '#ffffff' : '#0f172a',
+          headerTitleStyle: {
+            fontWeight: '600',
+          },
+        }}
+      >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen 
+          name="workout/new" 
+          options={{ 
+            title: 'Novo Treino',
+            presentation: 'modal',
+          }} 
+        />
+        <Stack.Screen 
+          name="workout/edit/[id]" 
+          options={{ 
+            title: 'Editar Treino',
+            presentation: 'modal',
+          }} 
+        />
+        <Stack.Screen 
+          name="workout/[id]" 
+          options={{ 
+            title: 'Detalhes do Treino',
+          }} 
+        />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
       </Stack>
     </ThemeProvider>
