@@ -1,10 +1,10 @@
+import { useTheme } from '@/contexts/ThemeContext';
 import { Workout } from '@/types/workout';
 import { Edit, Trash2 } from 'lucide-react-native';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MiniChart } from './MiniChart';
 import { Card } from './ui/Card';
-import { useColorScheme } from './useColorScheme';
 
 interface WorkoutCardProps {
   workout: Workout;
@@ -19,8 +19,8 @@ export const WorkoutCard: React.FC<WorkoutCardProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   const getTypeColor = (type: string) => {
     switch (type) {

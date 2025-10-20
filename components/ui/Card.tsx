@@ -1,4 +1,4 @@
-import { useColorScheme } from '@/components/useColorScheme';
+import { useTheme } from '@/contexts/ThemeContext';
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
@@ -8,8 +8,8 @@ interface CardProps {
 }
 
 export const Card: React.FC<CardProps> = ({ children, style }) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   return (
     <View

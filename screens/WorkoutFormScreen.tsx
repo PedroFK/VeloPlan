@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
-import { useColorScheme } from '@/components/useColorScheme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { storageService } from '@/services/storageService';
 import { parseWorkoutStructure, validateWorkoutStructure } from '@/services/workoutParser';
 import { Workout, WorkoutFormData, WorkoutType } from '@/types/workout';
@@ -18,8 +18,8 @@ import {
 } from 'react-native';
 
 export default function WorkoutFormScreen() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const isEditing = !!id;

@@ -1,4 +1,4 @@
-import { useColorScheme } from '@/components/useColorScheme';
+import { useTheme } from '@/contexts/ThemeContext';
 import React from 'react';
 import { StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
 
@@ -8,8 +8,8 @@ interface InputProps extends TextInputProps {
 }
 
 export const Input: React.FC<InputProps> = ({ label, error, style, ...props }) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   return (
     <View style={styles.container}>

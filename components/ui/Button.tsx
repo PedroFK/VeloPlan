@@ -1,4 +1,4 @@
-import { useColorScheme } from '@/components/useColorScheme';
+import { useTheme } from '@/contexts/ThemeContext';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
@@ -21,8 +21,8 @@ export const Button: React.FC<ButtonProps> = ({
   loading = false,
   fullWidth = false,
 }) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   const getVariantStyles = () => {
     switch (variant) {

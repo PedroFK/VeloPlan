@@ -1,13 +1,13 @@
 import { Tabs } from 'expo-router';
-import { BarChart3, Dumbbell } from 'lucide-react-native';
+import { BarChart3, Dumbbell, Settings } from 'lucide-react-native';
 import React from 'react';
 import { Platform } from 'react-native';
 
-import { useColorScheme } from '@/components/useColorScheme';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   return (
     <Tabs
@@ -34,6 +34,13 @@ export default function TabLayout() {
         options={{
           title: 'Estatísticas',
           tabBarIcon: ({ color, size }) => <BarChart3 size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Configurações',
+          tabBarIcon: ({ color, size }) => <Settings size={size} color={color} />,
         }}
       />
     </Tabs>

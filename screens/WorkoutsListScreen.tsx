@@ -1,5 +1,5 @@
-import { useColorScheme } from '@/components/useColorScheme';
 import { WorkoutCard } from '@/components/WorkoutCard';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useWorkouts } from '@/hooks/useWorkouts';
 import { useRouter } from 'expo-router';
 import { Plus } from 'lucide-react-native';
@@ -15,8 +15,8 @@ import {
 } from 'react-native';
 
 export default function WorkoutsListScreen() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const { workouts, loading, deleteWorkout, loadWorkouts } = useWorkouts();
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();

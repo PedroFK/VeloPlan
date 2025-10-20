@@ -1,13 +1,13 @@
 import { Card } from '@/components/ui/Card';
-import { useColorScheme } from '@/components/useColorScheme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useWorkouts } from '@/hooks/useWorkouts';
 import { BarChart3, Clock, Dumbbell } from 'lucide-react-native';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function StatisticsScreen() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const { workouts } = useWorkouts();
 
   const totalWorkouts = workouts.length;

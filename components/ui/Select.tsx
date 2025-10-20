@@ -1,4 +1,4 @@
-import { useColorScheme } from '@/components/useColorScheme';
+import { useTheme } from '@/contexts/ThemeContext';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -22,8 +22,8 @@ export const Select: React.FC<SelectProps> = ({
   onChange,
   error,
 }) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   return (
     <View style={styles.container}>

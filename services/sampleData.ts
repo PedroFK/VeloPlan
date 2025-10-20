@@ -1,9 +1,6 @@
 import { Workout } from '@/types/workout';
 import { parseWorkoutStructure } from './workoutParser';
 
-/**
- * Dados de exemplo para demonstração inicial do app
- */
 export const sampleWorkouts: Workout[] = [
   {
     id: '1',

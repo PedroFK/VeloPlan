@@ -1,16 +1,16 @@
+import { useTheme } from '@/contexts/ThemeContext';
 import { WorkoutInterval } from '@/types/workout';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
-import { useColorScheme } from './useColorScheme';
 
 interface MiniChartProps {
   intervals: WorkoutInterval[];
 }
 
 export const MiniChart: React.FC<MiniChartProps> = ({ intervals }) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   if (!intervals || intervals.length === 0) {
     return (
@@ -23,7 +23,6 @@ export const MiniChart: React.FC<MiniChartProps> = ({ intervals }) => {
     );
   }
 
-  // Gera dados para o gráfico
   const data: { x: number; y: number }[] = [];
   let currentTime = 0;
 
@@ -36,9 +35,8 @@ export const MiniChart: React.FC<MiniChartProps> = ({ intervals }) => {
   const width = 300;
   const height = 60;
   const maxX = Math.max(...data.map((d) => d.x));
-  const maxY = 5; // Intensidade máxima (z5)
+  const maxY = 5;
 
-  // Cria o caminho SVG
   const pathData = data
     .map((point, index) => {
       const x = (point.x / maxX) * width;

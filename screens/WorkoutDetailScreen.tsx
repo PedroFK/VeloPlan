@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/Card';
-import { useColorScheme } from '@/components/useColorScheme';
 import { WorkoutChart } from '@/components/WorkoutChart';
+import { useTheme } from '@/contexts/ThemeContext';
 import { storageService } from '@/services/storageService';
 import { Workout } from '@/types/workout';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -16,8 +16,8 @@ import {
 } from 'react-native';
 
 export default function WorkoutDetailScreen() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const router = useRouter();
   const { id } = useLocalSearchParams();
 

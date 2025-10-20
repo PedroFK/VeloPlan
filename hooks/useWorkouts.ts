@@ -2,9 +2,6 @@ import { storageService } from '@/services/storageService';
 import { Workout } from '@/types/workout';
 import { useCallback, useEffect, useState } from 'react';
 
-/**
- * Hook para gerenciar estado e operações de treinos
- */
 export const useWorkouts = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);

@@ -3,13 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const STORAGE_KEY = '@workouts';
 
-/**
- * Serviço para gerenciar o armazenamento local de treinos
- */
 export const storageService = {
-  /**
-   * Retorna todos os treinos salvos
-   */
   async getWorkouts(): Promise<Workout[]> {
     try {
       const data = await AsyncStorage.getItem(STORAGE_KEY);
@@ -20,9 +14,6 @@ export const storageService = {
     }
   },
 
-  /**
-   * Retorna um treino específico pelo ID
-   */
   async getWorkoutById(id: string): Promise<Workout | null> {
     try {
       const workouts = await this.getWorkouts();
@@ -33,9 +24,6 @@ export const storageService = {
     }
   },
 
-  /**
-   * Salva um novo treino
-   */
   async saveWorkout(workout: Workout): Promise<void> {
     try {
       const workouts = await this.getWorkouts();
@@ -47,9 +35,6 @@ export const storageService = {
     }
   },
 
-  /**
-   * Atualiza um treino existente
-   */
   async updateWorkout(id: string, updates: Partial<Workout>): Promise<void> {
     try {
       const workouts = await this.getWorkouts();
@@ -72,9 +57,6 @@ export const storageService = {
     }
   },
 
-  /**
-   * Deleta um treino
-   */
   async deleteWorkout(id: string): Promise<void> {
     try {
       const workouts = await this.getWorkouts();
@@ -86,9 +68,6 @@ export const storageService = {
     }
   },
 
-  /**
-   * Limpa todos os treinos (útil para debug)
-   */
   async clearAll(): Promise<void> {
     try {
       await AsyncStorage.removeItem(STORAGE_KEY);

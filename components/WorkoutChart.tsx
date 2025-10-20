@@ -1,16 +1,16 @@
+import { useTheme } from '@/contexts/ThemeContext';
 import { WorkoutInterval } from '@/types/workout';
 import React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, Line, LinearGradient, Path, Stop, Text as SvgText } from 'react-native-svg';
-import { useColorScheme } from './useColorScheme';
 
 interface WorkoutChartProps {
   intervals: WorkoutInterval[];
 }
 
 export const WorkoutChart: React.FC<WorkoutChartProps> = ({ intervals }) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   if (!intervals || intervals.length === 0) {
     return (
@@ -30,7 +30,6 @@ export const WorkoutChart: React.FC<WorkoutChartProps> = ({ intervals }) => {
     );
   }
 
-  // Gera dados para o gráfico
   const data: { x: number; y: number }[] = [];
   let currentTime = 0;
 
@@ -41,13 +40,12 @@ export const WorkoutChart: React.FC<WorkoutChartProps> = ({ intervals }) => {
   });
 
   const screenWidth = Dimensions.get('window').width;
-  const width = screenWidth - 80; // Margem para labels
+  const width = screenWidth - 80;
   const height = 250;
   const maxX = Math.max(...data.map((d) => d.x));
-  const maxY = 5; // Intensidade máxima (z5)
+  const maxY = 5;
   const padding = 40;
 
-  // Cria o caminho SVG
   const pathData = data
     .map((point, index) => {
       const x = padding + ((point.x / maxX) * (width - padding * 2));
@@ -58,7 +56,6 @@ export const WorkoutChart: React.FC<WorkoutChartProps> = ({ intervals }) => {
 
   const areaPath = `${pathData} L ${width - padding} ${height - padding} L ${padding} ${height - padding} Z`;
 
-  // Linhas de grade
   const gridLines = [1, 2, 3, 4, 5].map((zone) => {
     const y = padding + (height - padding * 2) - ((zone / maxY) * (height - padding * 2));
     return { zone, y };
@@ -82,7 +79,6 @@ export const WorkoutChart: React.FC<WorkoutChartProps> = ({ intervals }) => {
           </LinearGradient>
         </Defs>
 
-        {/* Linhas de grade */}
         {gridLines.map((line) => (
           <React.Fragment key={line.zone}>
             <Line
@@ -105,14 +101,11 @@ export const WorkoutChart: React.FC<WorkoutChartProps> = ({ intervals }) => {
           </React.Fragment>
         ))}
 
-        {/* Área preenchida */}
         <Path d={areaPath} fill="url(#chartGradient)" />
 
-        {/* Linha do gráfico */}
         <Path d={pathData} stroke="#3b82f6" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
       </Svg>
 
-      {/* Legenda de tempo */}
       <View style={styles.legend}>
         <Text style={[styles.legendText, { color: isDark ? '#94a3b8' : '#64748b' }]}>
           0 min
