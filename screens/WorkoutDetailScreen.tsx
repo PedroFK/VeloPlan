@@ -3,9 +3,9 @@ import { WorkoutChart } from '@/components/WorkoutChart';
 import { useTheme } from '@/contexts/ThemeContext';
 import { storageService } from '@/services/storageService';
 import { Workout } from '@/types/workout';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Calendar, Clock, Edit, Trash2 } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     Alert,
     ScrollView,
@@ -29,6 +29,14 @@ export default function WorkoutDetailScreen() {
       loadWorkout(id);
     }
   }, [id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (typeof id === 'string') {
+        loadWorkout(id);
+      }
+    }, [id])
+  );
 
   const loadWorkout = async (workoutId: string) => {
     try {

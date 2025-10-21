@@ -4,28 +4,48 @@ export const parseWorkoutStructure = (structure: string): WorkoutInterval[] => {
   const intervals: WorkoutInterval[] = [];
   
   try {
-    const cleaned = structure.trim().toLowerCase();
+    const lines = structure.split('\n').map(line => line.trim());
     
-    const repeatMatch = cleaned.match(/^(\d+)x\((.*)\)$/);
-    
-    if (repeatMatch) {
-      const repeats = parseInt(repeatMatch[1]);
-      const content = repeatMatch[2];
+    let i = 0;
+    while (i < lines.length) {
+      const line = lines[i];
       
-      const parts = content.split('/').map(p => p.trim());
-      
-      for (let i = 0; i < repeats; i++) {
-        parts.forEach(part => {
-          const interval = parseSingleInterval(part);
-          if (interval) intervals.push(interval);
-        });
+      if (!line) {
+        i++;
+        continue;
       }
-    } else {
-      const parts = cleaned.split('/').map(p => p.trim());
-      parts.forEach(part => {
-        const interval = parseSingleInterval(part);
+      
+      if (!line.startsWith('-') && !line.match(/^\d+x$/)) {
+        i++;
+        continue;
+      }
+      
+      const repeatMatch = line.match(/^(\d+)x$/);
+      if (repeatMatch) {
+        const repeats = parseInt(repeatMatch[1]);
+        i++;
+        
+        const blockIntervals: WorkoutInterval[] = [];
+        while (i < lines.length && lines[i] && lines[i].startsWith('-')) {
+          const interval = parseSingleInterval(lines[i]);
+          if (interval) blockIntervals.push(interval);
+          i++;
+        }
+        
+        for (let r = 0; r < repeats; r++) {
+          intervals.push(...blockIntervals);
+        }
+        continue;
+      }
+      
+      if (line.startsWith('-')) {
+        const interval = parseSingleInterval(line);
         if (interval) intervals.push(interval);
-      });
+        i++;
+        continue;
+      }
+      
+      i++;
     }
   } catch (error) {
     console.error('Erro ao fazer parse da estrutura:', error);
@@ -36,26 +56,58 @@ export const parseWorkoutStructure = (structure: string): WorkoutInterval[] => {
 
 const parseSingleInterval = (text: string): WorkoutInterval | null => {
   try {
-    const matchMin = text.match(/(\d+(?:\.\d+)?)\s*(?:m|min)\s*z(\d)/);
+    const cleaned = text.replace(/^-\s*/, '');
+    
+    const matchMin = cleaned.match(/^(\d+(?:\.\d+)?)\s*m\s+Z(\d)(?:-Z(\d))?\s+HR\s+intensity=(\w+)/i);
     if (matchMin) {
+      const duration = parseFloat(matchMin[1]);
+      const intensity1 = parseInt(matchMin[2]);
+      const intensity2 = matchMin[3] ? parseInt(matchMin[3]) : intensity1;
+      const intensityType = matchMin[4];
+      
       return {
-        duration: parseFloat(matchMin[1]),
-        intensity: parseInt(matchMin[2]),
-        description: text,
+        duration,
+        intensity: Math.round((intensity1 + intensity2) / 2),
+        description: cleaned,
+        type: intensityType,
       };
     }
     
-    const matchSec = text.match(/(\d+(?:\.\d+)?)\s*(?:s|sec|seg)\s*z(\d)/);
+    const matchSec = cleaned.match(/^(\d+(?:\.\d+)?)\s*s\s+Z(\d)(?:-Z(\d))?\s+HR\s+intensity=(\w+)/i);
     if (matchSec) {
+      const duration = parseFloat(matchSec[1]) / 60;
+      const intensity1 = parseInt(matchSec[2]);
+      const intensity2 = matchSec[3] ? parseInt(matchSec[3]) : intensity1;
+      const intensityType = matchSec[4];
+      
       return {
-        duration: parseFloat(matchSec[1]) / 60,
-        intensity: parseInt(matchSec[2]),
-        description: text,
+        duration,
+        intensity: Math.round((intensity1 + intensity2) / 2),
+        description: cleaned,
+        type: intensityType,
+      };
+    }
+    
+    const matchKm = cleaned.match(/^(\d+(?:\.\d+)?)\s*km\s+.*?Z(\d)(?:-Z(\d))?\s+HR\s+intensity=(\w+)/i);
+    if (matchKm) {
+      const distance = parseFloat(matchKm[1]);
+      const intensity1 = parseInt(matchKm[2]);
+      const intensity2 = matchKm[3] ? parseInt(matchKm[3]) : intensity1;
+      const intensityType = matchKm[4];
+      
+      const estimatedDuration = distance / 20 * 60;
+      
+      return {
+        duration: estimatedDuration,
+        intensity: Math.round((intensity1 + intensity2) / 2),
+        description: cleaned,
+        type: intensityType,
       };
     }
     
     return null;
   } catch (error) {
+    console.error('Erro ao fazer parse do intervalo:', error);
     return null;
   }
 };

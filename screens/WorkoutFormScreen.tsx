@@ -27,7 +27,6 @@ export default function WorkoutFormScreen() {
   const [formData, setFormData] = useState<WorkoutFormData>({
     name: '',
     description: '',
-    duration: '',
     type: 'resistência',
     structure: '',
   });
@@ -48,7 +47,6 @@ export default function WorkoutFormScreen() {
         setFormData({
           name: workout.name,
           description: workout.description,
-          duration: workout.duration.toString(),
           type: workout.type,
           structure: workout.structure,
         });
@@ -66,14 +64,10 @@ export default function WorkoutFormScreen() {
       newErrors.name = 'Nome é obrigatório';
     }
 
-    if (!formData.duration || parseFloat(formData.duration) <= 0) {
-      newErrors.duration = 'Duração deve ser maior que 0';
-    }
-
     if (!formData.structure.trim()) {
       newErrors.structure = 'Estrutura é obrigatória';
     } else if (!validateWorkoutStructure(formData.structure)) {
-      newErrors.structure = 'Formato inválido. Ex: 3x(1m z5 / 2m z2)';
+      newErrors.structure = 'Formato inválido. Veja o exemplo abaixo';
     }
 
     setErrors(newErrors);
@@ -87,12 +81,13 @@ export default function WorkoutFormScreen() {
 
     try {
       const intervals = parseWorkoutStructure(formData.structure);
+      const calculatedDuration = intervals.reduce((sum, interval) => sum + interval.duration, 0);
 
       if (isEditing && typeof id === 'string') {
         await storageService.updateWorkout(id, {
           name: formData.name,
           description: formData.description,
-          duration: parseFloat(formData.duration),
+          duration: Math.round(calculatedDuration),
           type: formData.type,
           structure: formData.structure,
           intervals,
@@ -103,7 +98,7 @@ export default function WorkoutFormScreen() {
           id: Date.now().toString(),
           name: formData.name,
           description: formData.description,
-          duration: parseFloat(formData.duration),
+          duration: Math.round(calculatedDuration),
           type: formData.type,
           structure: formData.structure,
           intervals,
@@ -167,17 +162,6 @@ export default function WorkoutFormScreen() {
             style={{ minHeight: 80, textAlignVertical: 'top' }}
           />
 
-          <Input
-            label="Duração (minutos) *"
-            value={formData.duration}
-            onChangeText={(text) =>
-              setFormData({ ...formData, duration: text })
-            }
-            placeholder="30"
-            keyboardType="numeric"
-            error={errors.duration}
-          />
-
           <Select
             label="Tipo de Treino *"
             value={formData.type}
@@ -197,7 +181,10 @@ export default function WorkoutFormScreen() {
             onChangeText={(text) =>
               setFormData({ ...formData, structure: text })
             }
-            placeholder="Ex: 3x(1m z5 / 2m z2)"
+            placeholder="Digite a estrutura do treino..."
+            multiline
+            numberOfLines={8}
+            style={{ minHeight: 180, textAlignVertical: 'top', fontFamily: 'monospace' }}
             error={errors.structure}
           />
 
@@ -216,7 +203,7 @@ export default function WorkoutFormScreen() {
                 { color: isDark ? '#e2e8f0' : '#334155' },
               ]}
             >
-              💡 Como estruturar:
+              💡 Formato da estrutura:
             </Text>
             <Text
               style={[
@@ -224,29 +211,40 @@ export default function WorkoutFormScreen() {
                 { color: isDark ? '#94a3b8' : '#64748b' },
               ]}
             >
-              • Use "m" ou "min" para minutos{'\n'}
-              • Use "z1" a "z5" para zonas de intensidade{'\n'}
-              • Separe intervalos com "/" {'\n'}
-              • Use "Nx(...)" para repetições{'\n'}
+              <Text style={{ fontWeight: '600' }}>Exemplo:</Text>{'\n'}
               {'\n'}
-              <Text style={{ fontWeight: '600' }}>Exemplo:</Text> 3x(1m z5 / 2m z2)
+              Warmup{'\n'}
+              - 10m Z2 HR intensity=warmup{'\n'}
+              {'\n'}
+              2x{'\n'}
+              - 10m Z4 HR intensity=interval{'\n'}
+              - 10m Z2 HR intensity=rest{'\n'}
+              {'\n'}
+              - 10m Z4 HR intensity=interval{'\n'}
+              {'\n'}
+              Cooldown{'\n'}
+              - 10m Z1 HR intensity=cooldown
             </Text>
           </View>
 
           <View style={styles.actions}>
-            <Button
-              title="Cancelar"
-              onPress={() => router.back()}
-              variant="ghost"
-              fullWidth
-            />
-            <Button
-              title={isEditing ? 'Salvar' : 'Criar'}
-              onPress={handleSubmit}
-              variant="primary"
-              fullWidth
-              loading={loading}
-            />
+            <View style={styles.buttonWrapper}>
+              <Button
+                title="Cancelar"
+                onPress={() => router.back()}
+                variant="ghost"
+                fullWidth
+              />
+            </View>
+            <View style={styles.buttonWrapper}>
+              <Button
+                title={isEditing ? 'Salvar' : 'Criar'}
+                onPress={handleSubmit}
+                variant="primary"
+                fullWidth
+                loading={loading}
+              />
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -291,6 +289,9 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     gap: 12,
+  },
+  buttonWrapper: {
+    flex: 1,
   },
 });
 

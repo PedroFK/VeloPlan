@@ -1,9 +1,9 @@
 import { WorkoutCard } from '@/components/WorkoutCard';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useWorkouts } from '@/hooks/useWorkouts';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Plus } from 'lucide-react-native';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
     Alert,
     FlatList,
@@ -20,6 +20,12 @@ export default function WorkoutsListScreen() {
   const { workouts, loading, deleteWorkout, loadWorkouts } = useWorkouts();
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
+
+  useFocusEffect(
+    useCallback(() => {
+      loadWorkouts();
+    }, [loadWorkouts])
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);
